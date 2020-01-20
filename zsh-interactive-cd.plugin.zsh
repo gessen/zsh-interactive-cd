@@ -6,11 +6,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-__zic_fzf_prog() {
-  [ -n "$TMUX_PANE" ] && [ "${FZF_TMUX:-0}" != 0 ] && [ ${LINES:-40} -gt 15 ] \
-    && echo "fzf-tmux -d${FZF_TMUX_HEIGHT:-40%}" || echo "fzf"
-}
-
 __zic_matched_subdir_list() {
   local dir length seg starts_with_dir
   if [[ "$1" == */ ]]; then
@@ -80,15 +75,13 @@ _zic_complete() {
     return
   fi
 
-  fzf=$(__zic_fzf_prog)
-
   if [ $(echo $l | wc -l) -eq 1 ]; then
     matches=${(q)l}
   else
     matches=$(echo $l \
         | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} \
           --reverse $FZF_DEFAULT_OPTS $FZF_COMPLETION_OPTS \
-          --bind 'shift-tab:up,tab:down'" ${=fzf} \
+          --bind 'shift-tab:up,tab:down'" "fzf" \
         | while read -r item; do
       echo -n "${(q)item} "
     done)
